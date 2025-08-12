@@ -1,8 +1,6 @@
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -77,10 +75,12 @@ public class QuizCardBuilder {
     }
 
     private class NextCardListener implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            QuizCard card = new QuizCard(question.getText(), answer.getText());
+            cardList.add(card);
+            clearCard();
         }
     }
 
@@ -89,21 +89,33 @@ public class QuizCardBuilder {
         public void actionPerformed(ActionEvent e) {
             QuizCard card = new QuizCard(question.getText(),answer.getText());
             cardList.add(card);
+
+            JFileChooser fileSave = new JFileChooser();
+            fileSave.showSaveDialog(frame);
+            saveFile(fileSave.getSelectedFile());
         }
     }
-
     private class NewMenuListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            cardList.clear();
+            clearCard();
         }
+    }
+    private void clearCard(){
+        question.setText("");
+        answer.setText("");
+        question.requestFocus();
     }
     private void saveFile(File file){
         try {
             BufferedWriter fw = new BufferedWriter(new FileWriter(file));
-
-
+            for(QuizCard card : cardList){
+                fw.write(card.getQuestion()+"/");
+                fw.write(card.getAnswer()+"\n");
+            }
+            fw.close();
         } catch(IOException e) {
             System.out.println("couldn't save file");
             e.printStackTrace();
